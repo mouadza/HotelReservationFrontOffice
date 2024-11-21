@@ -1,0 +1,17 @@
+﻿@model IEnumerable<Room>
+<h1>Available Rooms</h1>
+<table>
+    <tr>
+        <th>Type</th>
+        <th>Price</th>
+        <th>Status</th>
+    </tr>
+    @foreach (var room in Model)
+    {
+        <tr>
+            <td>@room.Type</td>
+            <td>@room.Price</td>
+            <td>@(room.IsAvailable ? "Available" : "Unavailable")</td>
+        </tr>
+    }
+</table>

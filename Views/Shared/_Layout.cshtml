@@ -1,0 +1,134 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@RenderSection("Title", required: false)</title>
+    <link rel="stylesheet" href="~/css/output.css" />
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body class="bg-warmGray text-gray-900">
+    <header class="text-black shadow-sm">
+        <nav class="container mx-auto flex justify-between items-center py-4">
+            <img src="~/logo.png" alt="Logo" style="height: 40px;width:100px">
+            <ul class="flex space-x-16">
+                <li><a class="hover:text-gold" href="/Home/Index">Home</a></li>
+                <li><a class="hover:text-gold" href="/Home/About">About Us</a></li>
+                <li><a class="hover:text-gold" href="/Home/Rooms">Rooms</a></li>
+                <li><a class="hover:text-gold" href="#contact-us">Contact Us</a></li>
+            </ul>
+            @if (HttpContextAccessor.HttpContext.Session.GetString("UserName") != null)
+            {
+                <div class="relative inline-block">
+                    <button class="flex items-center text-gray-800 font-semibold rounded hover:text-gray-600 px-4 py-2">
+                        <ion-icon name="person-circle-outline" class="text-xl mr-2"></ion-icon>  <!-- Adjust icon size and spacing -->
+                        <span>@HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>  <!-- Ensure text is styled -->
+                    </button>
+                    <div class="absolute right-[10px] mt-[0px] text-sm bg-gray-200 text-black rounded-md shadow-lg z-10 hidden">
+                        <form action="/Account/Logout" method="post" class="block text-left">
+                            <button type="submit" class="w-full px-8 py-2 flex items-center hover:text-gold rounded-md">
+                                <ion-icon name="log-out-outline" class="mr-2 text-lg"></ion-icon> <!-- Added spacing and size adjustment -->
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a href="/Account/Login" class="bg-gold text-white font-semibold py-2 px-4 rounded hover:contrast-75">Login</a>
+            }
+        </nav>
+    </header>
+
+    <main class="mx-auto px-8 py-2">
+        @RenderBody()
+    </main>
+
+    <footer id="contact-us" class="bg-deepBlue text-white py-8">
+        <div class="container mx-auto px-5">
+            <!-- Contact Section -->
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+                <!-- Contact Information -->
+                <div class="flex flex-col space-y-4">
+                    <h2 class="text-2xl font-bold text-gold">Contact Us</h2>
+                    <p class="text-sm">
+                        Feel free to reach out to us for any inquiries or reservations.
+                    </p>
+                    <div class="text-sm space-y-2">
+                        <p>
+                            <i class="ri-map-pin-line text-lg text-gold"></i>
+                            123 Luxury St, Casablanca, Morocco
+                        </p>
+                        <p>
+                            <i class="ri-phone-line text-lg text-gold"></i>
+                            +212 6 1234 5678
+                        </p>
+                        <p>
+                            <i class="ri-mail-line text-lg text-gold"></i>
+                            contact@hotelreservation.com
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="flex flex-col space-y-4">
+                    <h3 class="text-xl font-bold text-gold">Quick Links</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/" class="hover:text-slate-300">Home</a></li>
+                        <li><a href="/About" class="hover:text-slate-300">About Us</a></li>
+                        <li><a href="/Contact" class="hover:text-slate-300">Services</a></li>
+                        <li><a href="/FAQs" class="hover:text-slate-300">FAQs</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Media -->
+                <div class="flex flex-col space-y-4 items-center md:items-end">
+                    <h3 class="text-xl font-bold text-gold">Follow Us</h3>
+                    <div class="flex space-x-4 text-lg">
+                        <a href="https://facebook.com" class="hover:text-slate-300">
+                            <ion-icon name="logo-facebook"></ion-icon>
+                        </a>
+                        <a href="https://instagram.com" class="hover:text-slate-300">
+                            <ion-icon name="logo-instagram"></ion-icon>
+                        </a>
+                        <a href="https://linkedin.com" class="hover:text-slate-300">
+                            <ion-icon name="logo-linkedin"></ion-icon>
+                        </a>
+                        <a href="https://youtube.com" class="hover:text-slate-300">
+                            <ion-icon name="logo-youtube"></ion-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm border-t border-slate-700 pt-4">
+                &copy; 2024 Hotel Reservation, All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.relative').forEach(menu => {
+            menu.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const dropdown = this.querySelector('.absolute');
+                dropdown.classList.toggle('hidden');
+            });
+        });
+
+        // Close the dropdown when clicking anywhere outside the .relative menu
+        document.addEventListener('click', function (e) {
+            const dropdowns = document.querySelectorAll('.absolute');
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.contains(e.target) && !e.target.closest('.relative')) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
+
+</body>
+</html>
