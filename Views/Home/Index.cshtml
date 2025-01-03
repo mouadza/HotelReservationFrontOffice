@@ -1,7 +1,5 @@
-﻿
-@section Title {
- Home
-}
+﻿@model List<Room>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +10,7 @@
 </head>
 <body class="font-sans antialiased px-4">
     <section class="relative shadow-lg">
-        <img src="~/images/pic1.jpg" alt="Hotel" class="w-full h-[600px] object-cover">
+        <img src="~/images/home.jpg" alt="Hotel" class="w-full h-[600px] object-cover">
         <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div class="text-center text-white">
                 <h1 class="text-5xl font-bold">Welcome to Our Hotel</h1>
@@ -25,24 +23,17 @@
             <h2 class="text-3xl font-semibold">Check Availability</h2>
             <p class="mt-2 text-gray-600">Plan your stay with us.</p>
             <form class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-                <label class="p-3"">Check-in Date:</label>
+                <label class="p-3">Check-in Date:</label>
                 <input type="date" class="p-3 rounded border border-gray-300">
-                <label class="p-3" ">Check-out Date:</label>
+                <label class="p-3">Check-out Date:</label>
                 <input type="date" class="p-3 rounded border border-gray-300" placeholder="Check-out Date">
-                <select class="p-3 rounded border border-gray-300">
-                    <option value="" disabled selected>Adults</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
-                <select class="p-3 rounded border border-gray-300">
-                    <option value="" disabled selected>Children</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
+                <label class="p-3">Room Type</label>
+                <select name="roomType" class="px-6 py-2 border border-gray-300 rounded-lg">
+                    <option value="">All</option>
+                    @foreach (var roomType in ViewBag.RoomTypes)
+                    {
+                        <option value="@roomType.Name">@roomType.Name</option>
+                    }
                 </select>
             </form>
             <button type="submit" class="bg-deepBlue text-white px-6 py-3 rounded hover:bg-blue-700 mt-8 hover:text-white">Check Now</button>
@@ -53,33 +44,17 @@
             <h2 class="text-3xl font-semibold text-center">Our Rooms</h2>
             <p class="mt-2 text-gray-600 text-center">Explore the variety of rooms we offer.</p>
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="https://via.placeholder.com/400x250" alt="Room" class="w-full h-[200px] object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-semibold">Single Room</h3>
-                        <p class="mt-2 text-gray-600">A cozy room for a single guest.</p>
-                        <button class="mt-4 bg-deepBlue text-white px-4 py-2 rounded hover:bg-blue-700">Book Now</button>
-                        <button class="mt-4 ml-6 text-sm text-black border border-gray-700 px-4 py-2 rounded hover:bg-gray-100">More Details</button>
+                @foreach (var room in Model)
+                {
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="~/images/room1.jpg" alt="Room" class="w-full h-[200px] object-cover">
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold">@room.Numero</h3>
+                            <p class="mt-2 text-gray-600">Prix: @room.Prix$</p>
+                            <a href="/Home/Book/@room.Id" class="text-white bg-deepBlue hover:contrast-75 font-semibold py-2 px-4 rounded mt-4 block text-center">Book Now</a>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="https://via.placeholder.com/400x250" alt="Room" class="w-full h-[200px] object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-semibold">Double Room</h3>
-                        <p class="mt-2 text-gray-600">Perfect for couples or friends.</p>
-                        <button class="mt-4 bg-deepBlue text-white px-4 py-2 rounded hover:bg-blue-700">Book Now</button>
-                        <button class="mt-4 ml-4 text-sm text-black border border-gray-700 px-4 py-2 rounded hover:bg-gray-100">More Details</button>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="https://via.placeholder.com/400x250" alt="Room" class="w-full h-[200px] object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-semibold">Suite</h3>
-                        <p class="mt-2 text-gray-600">Luxury suite for a premium experience.</p>
-                        <button class="mt-4 bg-deepBlue text-white px-4 py-2 rounded hover:bg-blue-700">Book Now</button>
-                        <button class="mt-4 ml-4 text-sm text-black border border-gray-700 px-4 py-2 rounded hover:bg-gray-100">More Details</button>
-                    </div>
-                </div>
+                }
             </div>
         </div><br />
         <a href="/Home/Rooms" class="ml-[44%] text-sm text-black border border-gray-700 px-4 py-1 hover:bg-warmGray hover:border-3">See more >></a>

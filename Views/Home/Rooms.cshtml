@@ -1,52 +1,54 @@
-﻿@section Title {
+﻿@model List<Room>
+@section Title {
     Rooms
 }
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <div class="flex min-h-screen bg-gray-100">
     <aside class="w-1/4 bg-white p-6 shadow-lg">
         <h2 class="text-2xl font-bold mb-4">Filters</h2>
-        <form method="get" action="/Rooms">
+        <form method="get" action="/Home/Rooms">
             <div class="mb-6">
-                <label class="font-semibold mb-2 block">Price Range</label>
-                <input type="range" min="50" max="500" class="w-full" />
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>$50</span>
-                    <span>$500</span>
+                <div class="w-full">
+                    <label for="priceRange" class="block text-gray-600 mb-2 font-medium">Price Range:</label>
+                    <input type="range" id="priceRange" name="priceRange" min="40" max="200" value="100" class="w-full" oninput="updateRangeValue(this.value)" />
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>$40</span>
+                        <span>$200</span>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span id="rangeValue" class="font-bold text-gray-700">100</span>
+                    </div>
                 </div>
             </div>
             <div class="mb-6">
                 <label class="font-semibold mb-2 block">Room Type</label>
-                <select class="w-full border border-gray-300 rounded-lg py-2 px-3">
+                <select name="roomType" class="w-full border border-gray-300 rounded-lg py-2 px-3">
                     <option value="">All</option>
-                    <option value="single">Single</option>
-                    <option value="double">Double</option>
-                    <option value="suite">Suite</option>
+                    @foreach (var roomType in ViewBag.RoomTypes)
+                    {
+                        <option value="@roomType.Name">@roomType.Name</option>
+                    }
                 </select>
             </div>
             <div class="mb-6">
                 <label class="font-semibold mb-2 block">Availability</label>
-                <input type="checkbox" id="available" name="availability" />
+                <input type="hidden" id="availabilityHidden" name="availability" value="false" /> 
+                <input type="checkbox" id="available" name="availabilityCheckbox" value="true" onchange="updateAvailability()" />
                 <label for="available" class="ml-2">Available Now</label>
-            </div>
-            <div class="mb-6">
-                <label class="font-semibold mb-2 block">Facilities</label>
-                <input type="checkbox" id="Wifi" name="Wifi" />
-                <label for="available" class="ml-2">WIFI</label>
             </div>
             <button class="bg-gold text-white py-2 px-4 rounded hover:contrast-75 w-full">Apply Filters</button>
         </form>
+
     </aside>
     <main class="w-3/4 p-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8">Available Rooms</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">All Rooms</h1>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @for (int i = 0; i < 9; i++)
+            @foreach (var room in Model)
             {
                 <div class="bg-white shadow-lg rounded-lg overflow-hidden">
                     <div class="relative">
                         <div class="room-slider">
-                            <img src="~/images/room11.jpg" class="w-full h-48 object-cover" />
-                            <img src="~/images/room12.png" class="w-full h-48 object-cover hidden" />
+                            <img src="~/images/room1.jpg" class="w-full h-48 object-cover" />
+                            <img src="~/images/room.png" class="w-full h-48 object-cover hidden" />
                             <img src="~/images/room13.jpg" class="w-full h-48 object-cover hidden" />
                         </div>
                         <button class="prev-btn absolute left-2 top-1/2 transform -translate-y-1/2 text-3xl shadow-lg rounded-full p-3 transition">
@@ -57,10 +59,9 @@
                         </button>
                     </div>
                     <div class="p-4">
-                        <h2 class="font-bold text-xl text-gray-800">Luxury Suite</h2>
-                        <p class="text-gray-600">2 beds • 1 bath • WiFi</p>
-                        <p class="text-gold font-bold mt-2">$250 / Night</p>
-                        <a href="/Rooms/Details/1" class="text-white bg-deepBlue hover:contrast-75 font-semibold py-2 px-4 rounded mt-4 block text-center">View Details</a>
+                        <h2 class="font-bold text-xl text-gray-800">@room.Numero</h2>
+                        <p class="text-gold font-bold mt-2">@room.Prix$ / Night</p>
+                        <a href="/Home/Book/@room.Id" class="text-white bg-deepBlue hover:contrast-75 font-semibold py-2 px-4 rounded mt-4 block text-center">Book Now</a>
                     </div>
                 </div>
             }
@@ -68,6 +69,10 @@
     </main>
 </div>
 <script>
+    function updateAvailability() { const checkbox = document.getElementById('available'); const hiddenInput = document.getElementById('availabilityHidden'); hiddenInput.value = checkbox.checked ? "true" : "false"; }
+    function updateRangeValue(value) {
+        document.getElementById('rangeValue').textContent = value;
+    }
     document.querySelectorAll('.room-slider').forEach(slider => {
         const images = slider.querySelectorAll('img');
         let currentIndex = 0;
@@ -91,4 +96,3 @@
         showImage(currentIndex);
     });
 </script>
-

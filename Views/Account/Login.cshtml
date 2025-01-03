@@ -5,13 +5,10 @@
     <div class="bg-white shadow-lg rounded-lg lg:flex w-full overflow-hidden">
         <div class="lg:w-3/5 w-full p-8 lg:p-10">
             <h1 class="text-3xl font-bold text-gold mb-6 text-center border-b-2 border-gold pb-3">Login</h1>
-            @if (!ViewData.ModelState.IsValid)
+            @if (TempData["ErrorMessage"] != null)
             {
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                    {
-                        <p>@error.ErrorMessage</p>
-                    }
+                    <p>@TempData["ErrorMessage"]</p>
                 </div>
             }
             @if (TempData["SuccessMessage"] != null)
@@ -42,7 +39,7 @@
             </div>
         </div>
         <div class="lg:w-2/3 hidden lg:block">
-            <img src="~/images/pic2.jpeg" alt="Placeholder Image" class="object-cover w-full h-full rounded-r-lg">
+            <img src="~/images/login.jpg" alt="Placeholder Image" class="object-cover w-full h-full rounded-r-lg">
         </div>
     </div>
 </div>

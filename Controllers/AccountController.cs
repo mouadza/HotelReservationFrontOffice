@@ -12,17 +12,19 @@ public class AccountController : Controller
     {
         _context = context;
     }
+
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
+
     [HttpGet]
     public IActionResult Register()
     {
         return View();
     }
-    [HttpPost]
+
     [HttpPost]
     public async Task<IActionResult> Register(string fname, string lname, string tele, string email, string password, string Cpassword)
     {
@@ -40,14 +42,14 @@ public class AccountController : Controller
             return View();
         }
 
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (existingUser != null)
+        var existingClient = await _context.Client.FirstOrDefaultAsync(c => c.Email == email);
+        if (existingClient != null)
         {
             ModelState.AddModelError("", "Email is already registered.");
             return View();
         }
 
-        var user = new User
+        var client = new Client
         {
             FirstName = fname,
             LastName = lname,
@@ -56,7 +58,7 @@ public class AccountController : Controller
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
         };
 
-        _context.Users.Add(user);
+        _context.Client.Add(client);
         await _context.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "Registered successfully!";
@@ -68,20 +70,24 @@ public class AccountController : Controller
     {
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         {
-            ModelState.AddModelError("", "Email and Password are required.");
-            return View();
+            TempData["ErrorMessage"] = "Email and Password are required.";
+            return RedirectToAction("Login", "Account");
         }
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        var client = await _context.Client.FirstOrDefaultAsync(c => c.Email == email);
+        if (client == null || !BCrypt.Net.BCrypt.Verify(password, client.PasswordHash))
         {
-            ModelState.AddModelError("", "Invalid email or password.");
-            return View();
+            TempData["ErrorMessage"] = "Invalid email or password.";
+            return RedirectToAction("Login", "Account");
         }
-        HttpContext.Session.SetString("UserName", $"{user.FirstName} {user.LastName}");
-        HttpContext.Session.SetString("UserId", user.Id.ToString());
+
+        HttpContext.Session.SetString("UserName", $"{client.FirstName} {client.LastName}");
+        HttpContext.Session.SetString("ClientId", client.Id.ToString());
         return RedirectToAction("Index", "Home");
     }
+
+
+
     [HttpPost]
     public IActionResult Logout()
     {
