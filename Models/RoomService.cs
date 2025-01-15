@@ -63,37 +63,6 @@ public class RoomService
 
         return rooms;
     }
-    public List<Room> GetAllRooms()
-    {
-        List<Room> rooms = new List<Room>();
-
-        using (SqlConnection connection = new SqlConnection(ConnectionString))
-        {
-            string query = @"
-            SELECT c.Id, c.Numero, t.PrixParNuit, c.IdTypeChambre 
-            FROM Chambre c
-            JOIN TypeChambre t ON c.IdTypeChambre = t.Id";
-
-            SqlCommand command = new SqlCommand(query, connection);
-            connection.Open();
-            SqlDataReader reader = command.ExecuteReader();
-
-            while (reader.Read())
-            {
-                Room room = new Room
-                {
-                    Id = reader.GetInt32(0),
-                    Numero = reader.GetString(1),
-                    Prix = reader.GetInt32(2),
-                    IdTypeChambre = reader.GetInt32(3)
-                };
-
-                rooms.Add(room);
-            }
-        }
-
-        return rooms;
-    }
     public List<Room> GetFilteredRooms(string roomType, int? priceRange, string availability)
     {
         List<Room> rooms = new List<Room>();

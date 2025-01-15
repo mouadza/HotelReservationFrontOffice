@@ -94,17 +94,17 @@ namespace HotelReservationFrontOffice.Controllers
                 var emailService = new EmailService();
                 var subject = "Reservation Confirmation";
                 var body = $@"
-        <p>Dear {client.FirstName} {client.LastName},</p>
-        <p>Your reservation with ID {reservationService.LastReservationId} has been successfully made.</p>
-        <p>Details:</p>
-        <ul>
-            <li>Check-in Date: {checkin:dd/MM/yyyy}</li>
-            <li>Check-out Date: {checkout:dd/MM/yyyy}</li>
-            <li>Total: ${total}</li>
-        </ul>
-        <p>Thank you for choosing our hotel!</p>
-        <p>Best regards,<br/>HotelIMAR</p>
-    ";
+                <p>Dear {client.FirstName} {client.LastName},</p>
+                <p>Your reservation with ID {reservationService.LastReservationId} has been successfully made.</p>
+                <p>Details:</p>
+                <ul>
+                    <li>Check-in Date: {checkin:dd/MM/yyyy}</li>
+                    <li>Check-out Date: {checkout:dd/MM/yyyy}</li>
+                    <li>Total: ${total}</li>
+                </ul>
+                <p>Thank you for choosing our hotel!</p>
+                <p>Best regards,<br/>HotelIMAR</p>
+                ";
                 emailService.SendEmail(client.Email, subject, body);
             }
 
