@@ -50,8 +50,10 @@ public class AccountController : Controller
         }
 
         // Generate a verification token
-        var verificationCode = Guid.NewGuid().ToString().Substring(0, 6);
+        var random = new Random();
+        var verificationCode = random.Next(100000, 999999).ToString();
 
+        // Prepare client data (not saving to DB yet)
         var newClient = new Client
         {
             FirstName = fname,
@@ -61,12 +63,8 @@ public class AccountController : Controller
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
         };
 
-        // Save user to the database
-        _context.Client.Add(newClient);
-        await _context.SaveChangesAsync();
-
-        // Store the verification details temporarily in session
-        HttpContext.Session.SetString("VerificationEmail", email);
+        // Serialize client data and store it in session
+        HttpContext.Session.SetString("PendingClient", System.Text.Json.JsonSerializer.Serialize(newClient));
         HttpContext.Session.SetString("VerificationCode", verificationCode);
 
         // Send verification email
@@ -75,36 +73,48 @@ public class AccountController : Controller
         TempData["SuccessMessage"] = "Please verify your email to complete the registration.";
         return RedirectToAction("Verify");
     }
+
+
+    [HttpGet]
     public IActionResult Verify()
     {
-        var email = HttpContext.Session.GetString("VerificationEmail");
-        if (string.IsNullOrEmpty(email))
-        {
-            return RedirectToAction("Register");
-        }
-        ViewBag.Email = email;
         return View();
     }
 
     [HttpPost]
-    public IActionResult Verify(string email, string code)
+    public async Task<IActionResult> Verify(string code)
     {
-        var sessionEmail = HttpContext.Session.GetString("VerificationEmail");
-        var sessionCode = HttpContext.Session.GetString("VerificationCode");
+        var clientDataJson = HttpContext.Session.GetString("PendingClient");
+        var storedCode = HttpContext.Session.GetString("VerificationCode");
 
-        if (sessionEmail != email || sessionCode != code)
+        if (string.IsNullOrEmpty(clientDataJson) || string.IsNullOrEmpty(storedCode))
+        {
+            ModelState.AddModelError("", "Invalid or expired verification process. Please register again.");
+            return RedirectToAction("Register");
+        }
+        if (code != storedCode)
         {
             ModelState.AddModelError("", "Invalid or expired verification code.");
             return View();
         }
+        var clientData = System.Text.Json.JsonSerializer.Deserialize<Client>(clientDataJson);
+        if (clientData == null)
+        {
+            ModelState.AddModelError("", "Error verifying email. Please register again.");
+            return RedirectToAction("Register");
+        }
 
-        // Verification successful; clear session
-        HttpContext.Session.Remove("VerificationEmail");
+        _context.Client.Add(clientData);
+        await _context.SaveChangesAsync();
+        HttpContext.Session.Remove("PendingClient");
         HttpContext.Session.Remove("VerificationCode");
-
-        TempData["SuccessMessage"] = "Email verified successfully! You can now log in.";
+        TempData["SuccessMessage"] = "Registration complete. You can now log in.";
         return RedirectToAction("Login");
     }
+
+
+
+
 
 
     private async Task SendVerificationEmail(string email, string code)
@@ -121,21 +131,21 @@ public class AccountController : Controller
             From = new MailAddress("your-email@example.com", "IMAR Hotel"),
             Subject = "IMAR Hotel - Email Verification Code",
             Body = $@"
-Hello,
+            Hello,
 
-Thank you for registering with IMAR Hotel. To complete your registration, please verify your email address using the code below:
+            Thank you for registering with IMAR Hotel. To complete your registration, please verify your email address using the code below:
 
-Verification Code: {code}
+            Verification Code: <p class='text-gray-600'>{code}</p>
 
-If you did not request this verification, please ignore this email.
+            If you did not request this verification, please ignore this email.
 
-Best regards,
-IMAR Hotel Team
+            Best regards,
+            IMAR Hotel Team
 
---------------------------------------------------------
-For support, please contact us at support@imarhotel.com
+            --------------------------------------------------------
+            For support, please contact us at support@imarhotel.com
         ",
-            IsBodyHtml = false,  // Set to false for plain text email
+            IsBodyHtml = false,
         };
 
         mailMessage.To.Add(email);

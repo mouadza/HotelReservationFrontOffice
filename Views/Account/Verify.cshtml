@@ -1,28 +1,38 @@
 ﻿@section Title {
     Verify Email
 }
-<div class="flex justify-center items-center min-h-screen">
-    <div class="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
-        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Email Verification</h1>
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <p>@error.ErrorMessage</p>
-                }
-            </div>
-        }
-        <form action="/Account/Verify" method="POST">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="email" value="@ViewBag.Email" />
-            <div class="mb-6">
-                <label for="code" class="block text-gray-600 mb-2 font-medium">Verification Code:</label>
-                <input type="text" id="code" name="code" class="w-full border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Enter the code sent to your email">
-            </div>
-            <button type="submit" class="bg-gold hover:contrast-75 text-white font-semibold rounded-lg py-3 px-4 w-full">
-                Verify
-            </button>
-        </form>
+<div class="flex justify-center items-center min-h-screen rounded-lg px-8 py-4">
+    <div class="bg-white shadow-lg rounded-lg lg:flex w-full overflow-hidden">        
+        <div class="lg:w-1/2 hidden lg:block h-auto">
+            <img src="~/images/login.jpg" alt="Verification Image" class="object-cover w-full h-full rounded-l-lg">
+        </div>
+        <div class="lg:w-1/2 w-full p-8 lg:p-12">
+            <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Email Verification</h1>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+            <form asp-action="Verify" method="post">
+                @Html.AntiForgeryToken()
+                <div class="mb-6">
+                    <label for="code" class="block text-gray-600 mb-2 font-medium">Verification Code:</label>
+                    <input type="text"
+                           id="code"
+                           name="code"
+                           class="w-full border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-gold"
+                           placeholder="Enter the code sent to your email"
+                           required />
+                </div>
+                <button type="submit"
+                        class="bg-gold hover:contrast-75 text-white font-semibold rounded-lg py-3 px-4 w-full">
+                    Verify
+                </button>
+            </form>
+        </div>
     </div>
 </div>
